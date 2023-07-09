@@ -3246,7 +3246,9 @@ EOF
         echo -e "\\n\\n"
         tyblue "按两次回车键以继续。。。"
         read -rs
+        echo
         read -rs
+        echo
     elif [ "${pretend_list[$1]}" == "2" ]; then
         if ! curl -Lo "${temp_dir}/nextcloud.tar.bz2" "${nextcloud_url}"; then
             red "获取Nextcloud失败"
@@ -3269,8 +3271,17 @@ EOF
         echo -e "\\n\\n"
         tyblue "按两次回车键以继续。。。"
         read -rs
+        echo
         read -rs
         echo
+        for ((i = 0; i < ${#domain_list[@]}; ++i))
+        do
+            if [ "${pretend_list[$i]}" -eq 3 ] && [ "${pretend_redirect_index_list[$i]}" -eq "$1" ]; then
+                # 此域名正在被别的域名重定向
+                reset_nextcloud_host "$1"
+                break
+            fi
+        done
     elif [ "${pretend_list[$1]}" == "3" ]; then
         local redirect="${pretend_redirect_index_list[$1]}"
         if [ "${pretend_list[$redirect]}" -eq 2 ]; then
