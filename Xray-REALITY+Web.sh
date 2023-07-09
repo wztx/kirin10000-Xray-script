@@ -4091,9 +4091,10 @@ delete_domain()
     rm -rf "$HOME/.acme.sh/${true_domain_list[$selected_domain_index]}_ecc"
     systemctl stop "cloudreve.${true_domain_list[$selected_domain_index]}" 2> /dev/null
     systemctl disable "cloudreve.${true_domain_list[$selected_domain_index]}" 2> /dev/null
+    local _redirect=""
     if [ "${pretend_list[$selected_domain_index]}" -eq 3 ]; then
-        local redirect="${pretend_redirect_index_list[$selected_domain_index]}"
-        [ "${pretend_list[$redirect]}" -eq 2 ] && reset_nextcloud_host "$redirect"
+        _redirect="${pretend_redirect_index_list[$selected_domain_index]}"
+        [ "${pretend_list[$_redirect]}" -ne 2 ] && _redirect=""
     fi
     rm -rf "${nginx_prefix}/html/${true_domain_list[$selected_domain_index]}"
     systemctl daemon-reload
@@ -4111,6 +4112,7 @@ delete_domain()
     pretend_redirect_index_list=("${pretend_list[@]}")
     config_nginx
     config_xray
+    [ -n "$_redirect" ] && reset_nextcloud_host "$_redirect"
     systemctl -q is-active xray && systemctl restart xray
     [ $nginx_is_running -eq 1 ] && systemctl start nginx
     if ! check_need_php; then
