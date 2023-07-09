@@ -3722,22 +3722,23 @@ restart_xray_reality_web()
 {
     config_check
     local err=0
-    if ! systemctl restart xray; then
-        red "Xray 启动/重启失败！"
+    systemctl stop xray
+    systemctl disable xray
+    if ! systemctl --now enable xray; then
+        red "Xray 启动失败！"
         err=1
     fi
-    if ! systemctl restart nginx; then
-        red "Nginx 启动/重启失败！"
+    systemctl stop nginx
+    systemctl disable nginx
+    if ! systemctl --now enable nginx; then
+        red "Nginx 启动失败！"
         err=1
     fi
-    if check_need_php; then
-        if ! systemctl restart php-fpm; then
-            red "PHP 启动/重启失败！"
-            err=1
-        fi
-    else
-        systemctl stop php-fpm
-        systemctl disable php-fpm
+    systemctl stop php-fpm 2> /dev/null
+    systemctl disable php-fpm 2> /dev/null
+    if check_need_php && ! systemctl --now enable php-fpm; then
+        red "PHP 启动失败！"
+        err=1
     fi
     local i
     local domain_str
@@ -4409,13 +4410,6 @@ simplify_system()
         done
         mv /etc/apt/sources.list.bak /etc/apt/sources.list
     fi
-    if [ $nginx_is_installed -eq 1 ] || [ $php_is_installed -eq 1 ]; then
-        install_epel
-        install_remi
-    fi
-    [ $nginx_is_installed -eq 1 ] && install_nginx_dependencies
-    [ $php_is_installed -eq 1 ] && install_php_dependencies
-    [ $is_installed -eq 1 ] && install_acme_dependencies
     if [ -n "$save_ssh" ]; then
         echo "$save_ssh" > /etc/ssh/sshd_config
         if systemctl cat ssh > /dev/null 2>&1; then
@@ -4424,6 +4418,13 @@ simplify_system()
             systemctl restart sshd
         fi
     fi
+    if [ $nginx_is_installed -eq 1 ] || [ $php_is_installed -eq 1 ]; then
+        install_epel
+        install_remi
+    fi
+    [ $nginx_is_installed -eq 1 ] && install_nginx_dependencies
+    [ $php_is_installed -eq 1 ] && install_php_dependencies
+    [ $is_installed -eq 1 ] && install_acme_dependencies
     if [ $ret -eq 0 ]; then
         green "精简完成，建议重启系统并检查是否存在异常"
         [ -n "$save_ssh" ] && ask_if "是否现在重启系统？(y/n)" && reboot
