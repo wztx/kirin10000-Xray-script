@@ -1,7 +1,7 @@
 # Xray-REALITY+Web搭建/管理脚本
 ## 脚本使用说明
 ### 1. 准备域名 && 服务器
-使用此安装脚本至少需要准备一个域名，建议将域名的NS服务器托管至Cloudreve进行解析。
+使用此安装脚本至少需要准备一个域名，建议将域名的NS服务器托管至Cloudflare进行解析。
 
 准备一台带公网IP的VPS服务器，支持Debian基系统(Ubuntu、Debian、Deepin等)，以及Red Hat基系统(Red Hat、CentOS、Fedora、Oracle OS)，尽量使用纯净系统，尽量使用新版本系统。
 ### 2. 安装curl && ca-certificates
