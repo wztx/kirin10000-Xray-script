@@ -28,7 +28,7 @@ php_version="php-8.2.8"
 php_prefix="/usr/local/php"
 php_service="/etc/systemd/system/php-fpm.service"
 
-cloudreve_version="3.8.2"
+cloudreve_version="3.8.3"
 
 nextcloud_url="https://download.nextcloud.com/server/releases/nextcloud-27.0.0.tar.bz2"
 
